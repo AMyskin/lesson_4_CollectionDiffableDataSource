@@ -7,38 +7,38 @@
 
 import UIKit
 
-class ViewController: UIViewController,
-                      UICollectionViewDataSource,
-                      UICollectionViewDelegateFlowLayout,
-                      UICollectionViewDelegate {
+class ViewController: UIViewController {
+    typealias DataSource = UICollectionViewDiffableDataSource<HeadModel, Items>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<HeadModel, Items>
 
     let cellHeight: CGFloat = 80.0
     let headHeight: CGFloat = 32.0
     let screenSize: CGRect = UIScreen.main.bounds
 
     private let cellReuseIdentifier = "Cell"
+    private let sectionReuseIdentifier = "Section"
 
-    private var collectionView: UICollectionView = {
+    private lazy var datasource = makeDataSource()
+    private var snapshot = Snapshot()
+
+    private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 10
-        return UICollectionView(frame: UIScreen.main.bounds, collectionViewLayout: flowLayout)
+        return UICollectionView(frame: screenSize, collectionViewLayout: flowLayout)
     }()
-
-    var items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-    var section = ["A", "B", "C"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        fetchData()
 
         collectionView.register(CustomCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
         collectionView.register(
             HeadCell.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: "Section")
+            withReuseIdentifier: sectionReuseIdentifier)
         collectionView.delegate = self
-        collectionView.dataSource = self
     }
 
     private func configureUI() {
@@ -53,49 +53,49 @@ class ViewController: UIViewController,
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
 
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        section.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.items.count
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! CustomCell
-        cell.backgroundColor = UIColor.green
-        cell.title.text = "Title \(indexPath.row)"
-        cell.label.text = items[indexPath.row]
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                            viewForSupplementaryElementOfKind kind: String,
-                            at indexPath: IndexPath) -> UICollectionReusableView {
-
-        guard kind == UICollectionView.elementKindSectionHeader else {
-            return UICollectionReusableView()
+    // MARK: - private Functions
+    private func makeDataSource() -> DataSource {
+        let dataSource = DataSource(
+            collectionView: collectionView,
+            cellProvider: { (collectionView, indexPath, item) ->
+                CustomCell? in
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: self.cellReuseIdentifier,
+                    for: indexPath) as? CustomCell
+                cell?.title.text = item.title
+                cell?.label.text = item.label
+                return cell
+            })
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else {
+                return nil
+            }
+            let section = self.datasource.snapshot()
+                .sectionIdentifiers[indexPath.section]
+            let view = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: self.sectionReuseIdentifier,
+                for: indexPath) as? HeadCell
+            view?.title.text = section.title
+            return view
         }
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Section", for: indexPath) as! HeadCell
-
-        view.title.text = "Заголовок секции \(indexPath.section + 1) = \(section[indexPath.section])"
-        view.backgroundColor = .red
-        return view
+        return dataSource
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if section == 0 {
-            return CGSize(width: 0, height: 0)
-        } else {
-            return CGSize(width: collectionView.bounds.size.width, height: headHeight)
+    private func fetchData() {
+        snapshot = Snapshot()
+        let sections = DummyData.makeDummyHead()
+        snapshot.appendSections(sections)
+        sections.forEach { headModel in
+            let items = DummyData.makeDummyItems()
+            snapshot.appendItems(items, toSection: headModel)
         }
+        datasource.apply(snapshot)
     }
+}
 
+// MARK: - UICollectionViewDelegateFlowLayout
+extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -104,9 +104,26 @@ class ViewController: UIViewController,
         return CGSize(width: screenSize.width - 32, height: cellHeight)
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        didSelectItemAt indexPath: IndexPath) {
-        print("нажата ячейка No \(indexPath.row) в секции \(indexPath.section)")
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        let section = datasource.sectionIdentifier(for: section)
+        let title = section?.title ?? ""
+        let height: CGFloat = title.isEmpty ? 0 : headHeight
+        return CGSize(width: collectionView.bounds.width, height: height)
     }
 }
 
+// MARK: - UICollectionViewDelegate
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard
+            let selectedItem = datasource.itemIdentifier(for: indexPath)
+        else {
+            return
+        }
+        print(selectedItem)
+    }
+}

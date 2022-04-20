@@ -15,6 +15,7 @@
 		1BFB54CE280316C000BAE03F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1BFB54CC280316C000BAE03F /* LaunchScreen.storyboard */; };
 		1BFB54D6280316DD00BAE03F /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFB54D5280316DD00BAE03F /* CustomCell.swift */; };
 		1BFB54DA2803476300BAE03F /* HeadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFB54D92803476300BAE03F /* HeadCell.swift */; };
+		1BFB54DE28036CBA00BAE03F /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFB54DD28036CBA00BAE03F /* Model.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		1BFB54CF280316C000BAE03F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1BFB54D5280316DD00BAE03F /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		1BFB54D92803476300BAE03F /* HeadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadCell.swift; sourceTree = "<group>"; };
+		1BFB54DD28036CBA00BAE03F /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				1BFB54C1280316BF00BAE03F /* AppDelegate.swift */,
 				1BFB54C3280316BF00BAE03F /* SceneDelegate.swift */,
 				1BFB54C5280316BF00BAE03F /* ViewController.swift */,
+				1BFB54DC28036CA300BAE03F /* Model */,
 				1BFB54D5280316DD00BAE03F /* CustomCell.swift */,
 				1BFB54D92803476300BAE03F /* HeadCell.swift */,
 				1BFB54C7280316BF00BAE03F /* Main.storyboard */,
@@ -71,6 +74,14 @@
 				1BFB54CF280316C000BAE03F /* Info.plist */,
 			);
 			path = "lesson 4 Collection";
+			sourceTree = "<group>";
+		};
+		1BFB54DC28036CA300BAE03F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1BFB54DD28036CBA00BAE03F /* Model.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,6 +158,7 @@
 				1BFB54C6280316BF00BAE03F /* ViewController.swift in Sources */,
 				1BFB54DA2803476300BAE03F /* HeadCell.swift in Sources */,
 				1BFB54C2280316BF00BAE03F /* AppDelegate.swift in Sources */,
+				1BFB54DE28036CBA00BAE03F /* Model.swift in Sources */,
 				1BFB54D6280316DD00BAE03F /* CustomCell.swift in Sources */,
 				1BFB54C4280316BF00BAE03F /* SceneDelegate.swift in Sources */,
 			);
